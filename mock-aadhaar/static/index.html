@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aadhaar Authentication Service — UIDAI Mock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0b4a8f;
+            --primary-dark: #073263;
+            --accent: #e38c26;
+            --background: #f4f6f9;
+            --surface: #ffffff;
+            --text: #333333;
+            --text-muted: #666666;
+            --border: #cccccc;
+            --success: #2e7d32;
+            --error: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background-color: var(--surface);
+            border-bottom: 3px solid var(--accent);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .gov-banner {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emblem {
+            height: 60px;
+        }
+
+        .title-group h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .title-group p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .aadhaar-logo {
+            height: 45px;
+        }
+
+        /* ── Main Layout ── */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-header p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* ── Form Elements ── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .helper-select {
+            background-color: #fff8e1;
+            border-color: #ffe082;
+            color: #b78103;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(11, 74, 143, 0.05);
+        }
+
+        /* ── Notifications ── */
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border: 1px solid #c8e6c9;
+            display: block;
+        }
+
+        .alert-error {
+            background-color: #ffebee;
+            color: var(--error);
+            border: 1px solid #ffcdd2;
+            display: block;
+        }
+
+        /* ── Footer ── */
+        footer {
+            background-color: #1a1a1a;
+            color: #888888;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 3px solid var(--accent);
+        }
+
+        /* ── Animations ── */
+        .spinner {
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="gov-banner">
+            <img class="emblem" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/800px-Emblem_of_India.svg.png" alt="State Emblem of India">
+            <div class="title-group">
+                <h1>Unique Identification Authority of India</h1>
+                <p>Government of India</p>
+            </div>
+        </div>
+        <img class="aadhaar-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Aadhaar_Logo.svg/1200px-Aadhaar_Logo.svg.png" alt="Aadhaar Logo">
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="card-header">
+                <h2>Aadhaar Authentication</h2>
+                <p>Secure identity validation for KRISHISEVA Portal</p>
+            </div>
+            <div class="card-body">
+                <!-- Message Banner -->
+                <div id="messageBanner" style="display: none;"></div>
+
+                <!-- Step 1: Request OTP -->
+                <div id="step1">
+                    <div class="form-group">
+                        <label for="profileSelector">Demo Quick-Select (Seeded Test Profiles)</label>
+                        <select id="profileSelector" class="helper-select">
+                            <option value="">-- Choose a Seeded Profile --</option>
+                            <option value="123456789012">Ramesh Kumar (Aadhaar: 1234 5678 012 - Verified)</option>
+                            <option value="987654321098">Suresh Singh (Aadhaar: 9876 5432 098 - Unverified/No Land)</option>
+                            <option value="111122223333">Kamla Devi (Aadhaar: 1111 2222 333 - Suspended)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aadhaarInput">Aadhaar Number (12 Digits)</label>
+                        <input type="text" id="aadhaarInput" placeholder="Enter Aadhaar Number" maxlength="12" pattern="\d{12}">
+                    </div>
+
+                    <button id="btnRequest" class="btn">
+                        <span>Get One-Time Password (OTP)</span>
+                    </button>
+                </div>
+
+                <!-- Step 2: Verify OTP -->
+                <div id="step2" style="display: none;">
+                    <div class="form-group">
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+                            Enter the 6-digit OTP sent to your registered mobile number <strong id="phoneMask">XXXX-XXX-XXXX</strong>.
+                        </p>
+                        <label for="otpInput">One-Time Password (OTP)</label>
+                        <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6" pattern="\d{6}">
+                    </div>
+
+                    <button id="btnVerify" class="btn">
+                        <span>Verify & Authenticate</span>
+                    </button>
+                    <button id="btnBack" class="btn btn-secondary">Go Back</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Unique Identification Authority of India | Government of India | Mock Authentication Service (MockForge)</p>
+    </footer>
+
+    <script>
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const aadhaarInput = document.getElementById('aadhaarInput');
+        const profileSelector = document.getElementById('profileSelector');
+        const otpInput = document.getElementById('otpInput');
+        const btnRequest = document.getElementById('btnRequest');
+        const btnVerify = document.getElementById('btnVerify');
+        const btnBack = document.getElementById('btnBack');
+        const phoneMask = document.getElementById('phoneMask');
+        const messageBanner = document.getElementById('messageBanner');
+
+        // Populate input when profile selected
+        profileSelector.addEventListener('change', (e) => {
+            if (e.target.value) {
+                aadhaarInput.value = e.target.value;
+            }
+        });
+
+        function showMessage(text, type) {
+            messageBanner.className = `alert alert-${type}`;
+            messageBanner.textContent = text;
+            messageBanner.style.display = 'block';
+        }
+
+        function hideMessage() {
+            messageBanner.style.display = 'none';
+        }
+
+        // Action 1: Get OTP
+        btnRequest.addEventListener('click', async () => {
+            const aadhaar = aadhaarInput.value.trim();
+            if (aadhaar.length !== 12 || isNaN(aadhaar)) {
+                showMessage("Please enter a valid 12-digit Aadhaar number.", "error");
+                return;
+            }
+
+            hideMessage();
+            btnRequest.disabled = true;
+            btnRequest.innerHTML = '<div class="spinner"></div> Sending OTP...';
+
+            try {
+                const response = await fetch('/aadhaar/request-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ aadhaar_number: aadhaar })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    phoneMask.textContent = result.otp_sent_to;
+                    otpInput.value = result.mock_otp || ""; // Autopopulate mock OTP for dev convenience
+                    showMessage("OTP has been successfully sent to your registered mobile number.", "success");
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                } else {
+                    showMessage(result.detail || "Verification failed.", "error");
+                }
+            } catch (err) {
+                showMessage("A connection error occurred. Make sure mock server is running.", "error");
+            } finally {
+                btnRequest.disabled = false;
+                btnRequest.innerHTML = '<span>Get One-Time Password (OTP)</span>';
+            }
+        });
+
+        // Action 2: Verify OTP
+        btnVerify.addEventListener('click', async () => {
+            const aadhaar = aadhaarInput.value.trim();
+            const otp = otpInput.value.trim();
+
+            if (otp.length !== 6 || isNaN(otp)) {
+                showMessage("Please enter a valid 6-digit OTP.", "error");
+                return;
+            }
+
+            hideMessage();
+            btnVerify.disabled = true;
+            btnVerify.innerHTML = '<div class="spinner"></div> Verifying...';
+
+            try {
+                const response = await fetch('/aadhaar/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ aadhaar_number: aadhaar, otp: otp })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Authentication successful for ${result.farmer_details.name}. Redirecting...`, "success");
+                    btnVerify.disabled = true;
+                    
+                    // Trigger callback/redirect to parent application if url parameters exist
+                    const params = new URLSearchParams(window.location.search);
+                    const redirectUri = params.get('redirect_uri');
+                    const state = params.get('state');
+
+                    setTimeout(() => {
+                        if (redirectUri) {
+                            window.location.href = `${redirectUri}?code=MOCK_${aadhaar}&state=${state || ""}`;
+                        } else {
+                            alert("Identity successfully verified! In demo, KRISHISEVA app receives auth callback.");
+                        }
+                    }, 1500);
+                } else {
+                    showMessage(result.detail || "Invalid OTP verification failed.", "error");
+                }
+            } catch (err) {
+                showMessage("Connection error during OTP verification.", "error");
+            } finally {
+                if (!btnVerify.disabled) {
+                    btnVerify.disabled = false;
+                    btnVerify.innerHTML = '<span>Verify & Authenticate</span>';
+                }
+            }
+        });
+
+        // Action 3: Go Back
+        btnBack.addEventListener('click', () => {
+            hideMessage();
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

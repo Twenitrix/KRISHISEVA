@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockForge — Developer Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --text: #c9d1d9;
+            --text-heading: #f0f6fc;
+            --success: #3fb950;
+            --error: #f85149;
+            --warning: #d29922;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: var(--text-heading);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .btn-reset {
+            padding: 10px 16px;
+            background-color: var(--error);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset:hover {
+            opacity: 0.9;
+        }
+
+        /* ── Grid Layout ── */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            color: var(--text-heading);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        /* ── Scenarios ── */
+        .scenario-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(240, 246, 252, 0.05);
+        }
+
+        .scenario-item:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #21262d;
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #8b949e;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: white;
+        }
+
+        /* ── Logs Panel ── */
+        .logs-container {
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .log-card {
+            background-color: rgba(240, 246, 252, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .log-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: #8b949e;
+        }
+
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-200 { background-color: rgba(63, 185, 80, 0.15); color: var(--success); }
+        .badge-404 { background-color: rgba(210, 153, 34, 0.15); color: var(--warning); }
+        .badge-error { background-color: rgba(248, 81, 73, 0.15); color: var(--error); }
+
+        .log-details {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>
+            <div class="status-dot"></div>
+            <span>MockForge UIDAI Developer Control Center</span>
+        </h1>
+        <button id="btnReset" class="btn-reset">Reset State & Logs</button>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Scenarios panel -->
+        <div class="panel">
+            <h2>Error Scenarios</h2>
+            <div id="scenariosList">
+                <div class="scenario-item">
+                    <div>
+                        <div style="font-weight: 500;">Service Down (503)</div>
+                        <div style="font-size: 11px; color: #8b949e;">Return HTTP 503 for all endpoints</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="scenario_service_down" onchange="toggleScenario('service_down')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="scenario-item">
+                    <div>
+                        <div style="font-weight: 500;">Always Fail OTP (400)</div>
+                        <div style="font-size: 11px; color: #8b949e;">Every verification returns Invalid OTP</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="scenario_always_fail_otp" onchange="toggleScenario('always_fail_otp')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Logs panel -->
+        <div class="panel">
+            <h2>Integration Request logs</h2>
+            <div id="logsContainer" class="logs-container">
+                <div style="text-align: center; color: #8b949e; padding: 20px;">No requests received yet</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function fetchScenarios() {
+            const res = await fetch('/admin/scenarios');
+            const data = await res.json();
+            for (const [scenario, enabled] of Object.entries(data)) {
+                const el = document.getElementById(`scenario_${scenario}`);
+                if (el) el.checked = enabled;
+            }
+        }
+
+        async function toggleScenario(scenario) {
+            const el = document.getElementById(`scenario_${scenario}`);
+            const enabled = el.checked;
+            await fetch('/admin/scenario', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scenario, enabled })
+            });
+            fetchLogs();
+        }
+
+        async function fetchLogs() {
+            const res = await fetch('/admin/logs');
+            const data = await res.json();
+            const container = document.getElementById('logsContainer');
+            
+            if (data.logs.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">No requests received yet</div>';
+                return;
+            }
+
+            container.innerHTML = data.logs.reverse().map(log => {
+                let badgeClass = 'badge-200';
+                if (log.status_code === 404) badgeClass = 'badge-404';
+                else if (log.status_code >= 400) badgeClass = 'badge-error';
+
+                return `
+                    <div class="log-card">
+                        <div class="log-meta">
+                            <span>${log.timestamp}</span>
+                            <span>${log.method} ${log.endpoint}</span>
+                            <span class="status-badge ${badgeClass}">${log.status_code}</span>
+                        </div>
+                        <div class="log-details">${log.details}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('btnReset').addEventListener('click', async () => {
+            await fetch('/admin/reset', { method: 'POST' });
+            fetchScenarios();
+            fetchLogs();
+        });
+
+        // Initial fetch and poll every 2 seconds
+        fetchScenarios();
+        fetchLogs();
+        setInterval(fetchLogs, 2000);
+    </script>
+</body>
+</html>

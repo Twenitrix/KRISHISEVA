@@ -1,0 +1,59 @@
+# ──────────────────────────────────────────────
+# KRISHISEVA — Docker Compose
+# Services: backend (FastAPI) + db (PostgreSQL)
+# ──────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  # ── PostgreSQL Database ──
+  db:
+    image: postgres:16-alpine
+    container_name: krishiseva-db
+    environment:
+      POSTGRES_USER: krishiseva
+      POSTGRES_PASSWORD: krishiseva_secret
+      POSTGRES_DB: krishiseva
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U krishiseva -d krishiseva"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend ──
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: krishiseva-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Mock Aadhaar (UIDAI) Service ──
+  mock-aadhaar:
+    build:
+      context: ../mock-aadhaar
+    container_name: krishiseva-mock-aadhaar
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../mock-aadhaar:/app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:
+

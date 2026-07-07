@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "aadhaar_number": "123456789012",
+      "phone": "9876543210",
+      "name": "Ramesh Kumar",
+      "status": "active"
+    },
+    {
+      "aadhaar_number": "987654321098",
+      "phone": "9876543211",
+      "name": "Suresh Singh",
+      "status": "active"
+    },
+    {
+      "aadhaar_number": "111122223333",
+      "phone": "9876543212",
+      "name": "Kamla Devi",
+      "status": "suspended"
+    }
+  ]
+}

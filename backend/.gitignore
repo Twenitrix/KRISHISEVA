@@ -1,0 +1,42 @@
+# ── Environment ──
+.env
+*.env.local
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual Environment ──
+venv/
+.venv/
+env/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Docker ──
+docker-compose.override.yml
+
+# ── Uploads ──
+uploads/*
+!uploads/.gitkeep
+
+# ── Testing ──
+.coverage
+htmlcov/
+.pytest_cache/
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+*.db
