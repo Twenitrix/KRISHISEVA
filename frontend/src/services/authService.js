@@ -272,7 +272,8 @@ export const authService = {
       '123456789012': { name: 'Ramesh Kumar', phone: '9876543210', status: 'active' },
       '987654321098': { name: 'Suresh Singh', phone: '9876543211', status: 'active' },
       '111122223333': { name: 'Kamla Devi', phone: '9876543212', status: 'suspended' },
-      '987654329012': { name: 'Suresh Rao Patwardhan', phone: '9876543210', status: 'active' }
+      '987654329012': { name: 'Suresh Rao Patwardhan', phone: '9876543210', status: 'active' },
+      '999988887777': { name: 'Harish Patil', phone: '9999888877', status: 'active' }
     };
 
     const userData = mockUsers[aadhaarNumber] || {

@@ -370,3 +370,176 @@ INSERT INTO auth_logs (id, user_id, role, action, identifier, status, timestamp)
   ('auth-log-5', 'ngo6-uuid-seva', 'ngo', 'signup', 'contact@seva.org', 'success', now() - interval '1 day'),
   ('auth-log-6', 'off1-uuid-sdm', 'official', 'signout', 'session-end', 'success', now() - interval '12 hours')
 ON CONFLICT (id) DO NOTHING;
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- INTERCONNECTED SCENARIO (1 Farmer, 1 NGO, 1 Official, 10 Claims)
+-- ═══════════════════════════════════════════════════════════════════
+
+-- 1. Interconnected Farmer (Harish Patil)
+INSERT INTO farmers (id, village_id, aadhaar_masked, aadhaar_hash, name, phone, bank_account_number, bank_ifsc, is_verified)
+VALUES ('f-interconnected-harish', 'v1-uuid-wardha', 'XXXX-XXXX-7777', 'hash-999988887777', 'Harish Patil', '9999888877', '98765432101', 'SBIN0001234', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Interconnected NGO (Mitra NGO Agent)
+INSERT INTO ngos (id, name, license_number, contact_person, phone, email, is_active)
+VALUES ('ngo-interconnected-mitra', 'Mitra NGO Agent', 'MH/NGO/2026/099', 'Harish Patil Agent', '9999888878', 'ngo.harish@example.com', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Interconnected Official (AO Harish Deshpande)
+INSERT INTO officials (id, name, designation, email, phone, assigned_village_id, is_active)
+VALUES ('off-interconnected-ao', 'AO Harish Deshpande', 'Agriculture Officer', 'official.harish@gov.in', '9999888879', 'v1-uuid-wardha', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. Interconnected Land Registries (10 Cases)
+INSERT INTO land_registries (id, farmer_id, village_id, survey_number, area_hectares, crop_on_record, latitude, longitude, polygon_coords) VALUES
+  ('lr-case-1', 'f-interconnected-harish', 'v1-uuid-wardha', '301', 1.2, 'Cotton', 20.8351, 78.6015, '[[20.8349,78.6013],[20.8353,78.6013],[20.8353,78.6017],[20.8349,78.6017]]'),
+  ('lr-case-2', 'f-interconnected-harish', 'v1-uuid-wardha', '302', 1.5, 'Soybean', 20.8365, 78.6030, '[[20.8363,78.6028],[20.8367,78.6028],[20.8367,78.6032],[20.8363,78.6032]]'),
+  ('lr-case-3', 'f-interconnected-harish', 'v1-uuid-wardha', '303', 2.0, 'Pigeon Pea (Tur)', 20.8378, 78.6045, '[[20.8376,78.6043],[20.8380,78.6043],[20.8380,78.6047],[20.8376,78.6047]]'),
+  ('lr-case-4', 'f-interconnected-harish', 'v1-uuid-wardha', '304', 1.0, 'Wheat', 20.8355, 78.6020, '[[20.8353,78.6018],[20.8357,78.6018],[20.8357,78.6022],[20.8353,78.6022]]'),
+  ('lr-case-5', 'f-interconnected-harish', 'v1-uuid-wardha', '305', 1.8, 'Cotton', 20.8360, 78.6025, '[[20.8358,78.6023],[20.8362,78.6023],[20.8362,78.6027],[20.8358,78.6027]]'),
+  ('lr-case-6', 'f-interconnected-harish', 'v1-uuid-wardha', '306', 0.9, 'Soybean', 20.8370, 78.6040, '[[20.8368,78.6038],[20.8372,78.6038],[20.8372,78.6042],[20.8368,78.6042]]'),
+  ('lr-case-7', 'f-interconnected-harish', 'v1-uuid-wardha', '307', 2.5, 'Pigeon Pea (Tur)', 20.8385, 78.6050, '[[20.8383,78.6048],[20.8387,78.6048],[20.8387,78.6052],[20.8383,78.6052]]'),
+  ('lr-case-8', 'f-interconnected-harish', 'v1-uuid-wardha', '308', 1.1, 'Wheat', 20.8390, 78.6060, '[[20.8388,78.6058],[20.8392,78.6058],[20.8392,78.6062],[20.8388,78.6062]]'),
+  ('lr-case-9', 'f-interconnected-harish', 'v1-uuid-wardha', '309', 1.6, 'Cotton', 20.8395, 78.6070, '[[20.8393,78.6068],[20.8397,78.6068],[20.8397,78.6072],[20.8393,78.6072]]'),
+  ('lr-case-10', 'f-interconnected-harish', 'v1-uuid-wardha', '310', 1.4, 'Soybean', 20.8400, 78.6080, '[[20.8398,78.6078],[20.8402,78.6078],[20.8402,78.6082],[20.8398,78.6082]]')
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. Interconnected Claims & Payout Cases (10 Cases of various states)
+INSERT INTO claims (id, farmer_id, farmer_name, land_registry_id, survey_number, village_id, photo_url, photo_latitude, photo_longitude, photo_timestamp, claimed_event_type, claimed_event_date, description, ai_identified_crop, ai_damage_percentage, ai_justification, ai_crop_matches_record, ai_call_status, gps_match_score, land_match_score, duplicate_check_result, fraud_flags, overall_score, suggested_payout_amount, official_approved_amount, status, reviewed_by_official_id, official_remarks, created_at, updated_at) VALUES
+-- Claim 1: Filed
+(
+  'claim-case-1', 'f-interconnected-harish', 'Harish Patil', 'lr-case-1', '301', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600',
+  20.8351, 78.6015, now() - interval '2 hours',
+  'Flood', '2026-07-08', 'Cotton crops flooded by overflow.',
+  NULL, NULL, NULL, NULL, 'pending', 0, 0, NULL, NULL, 0, NULL, NULL,
+  'filed', NULL, NULL,
+  now() - interval '2 hours', now() - interval '2 hours'
+),
+-- Claim 2: Under Review
+(
+  'claim-case-2', 'f-interconnected-harish', 'Harish Patil', 'lr-case-2', '302', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600',
+  20.8364, 78.6029, now() - interval '10 hours',
+  'Flood', '2026-07-08', 'Waterlogged field.',
+  'Soybean', 65.0, 'Heavy mud submersion patterns detected.',
+  true, 'success', 95, 92, 'No duplicates', 'None', 93, 48750.0, NULL,
+  'under_review', NULL, NULL,
+  now() - interval '10 hours', now() - interval '9 hours'
+),
+-- Claim 3: Verified
+(
+  'claim-case-3', 'f-interconnected-harish', 'Harish Patil', 'lr-case-3', '303', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600',
+  20.8378, 78.6045, now() - interval '1 day',
+  'Hailstorm', '2026-07-07', 'Leaves and pods shredded by hailstones.',
+  'Pigeon Pea (Tur)', 80.0, 'Substantial leaf defoliation and broken branches visible.',
+  true, 'success', 98, 97, 'No duplicates', 'None', 97, 88000.0, NULL,
+  'verified', NULL, NULL,
+  now() - interval '1 day', now() - interval '18 hours'
+),
+-- Claim 4: Approved
+(
+  'claim-case-4', 'f-interconnected-harish', 'Harish Patil', 'lr-case-4', '304', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600',
+  20.8355, 78.6020, now() - interval '2 days',
+  'Drought', '2026-06-25', 'Soil cracks and completely dried wheat stems.',
+  'Wheat', 90.0, 'Severe crop dehydration and soil moisture depletion patterns.',
+  true, 'success', 96, 95, 'No duplicates', 'None', 95, 40500.0, 40500.0,
+  'approved', 'off-interconnected-ao', 'Drought confirmed via regional Remote Sensing index. Full payout approved.',
+  now() - interval '2 days', now() - interval '1 day'
+),
+-- Claim 5: Payout Completed
+(
+  'claim-case-5', 'f-interconnected-harish', 'Harish Patil', 'lr-case-5', '305', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600',
+  20.8360, 78.6025, now() - interval '3 days',
+  'Flood', '2026-07-01', 'Cotton plants swept away.',
+  'Cotton', 100.0, 'Total crop wash-out confirmed.',
+  true, 'success', 99, 98, 'No duplicates', 'None', 98, 108000.0, 108000.0,
+  'payout_completed', 'off-interconnected-ao', 'Approved and paid via direct AEPS transfer.',
+  now() - interval '3 days', now() - interval '2 days'
+),
+-- Claim 6: Denied
+(
+  'claim-case-6', 'f-interconnected-harish', 'Harish Patil', 'lr-case-6', '306', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600',
+  20.8490, 78.6250, now() - interval '4 days',
+  'Hailstorm', '2026-07-01', 'Claims wind damage.',
+  'Soybean', 15.0, 'Extremely minor defoliation, damage below 33% threshold.',
+  true, 'success', 22, 35, 'Failed checks', 'GPS Out of Bounds', 28, 6075.0, 0.0,
+  'denied', 'off-interconnected-ao', 'Rejected. Field photo coordinates are outside the registered boundary.',
+  now() - interval '4 days', now() - interval '3 days'
+),
+-- Claim 7: Under Review (Caterpillars)
+(
+  'claim-case-7', 'f-interconnected-harish', 'Harish Patil', 'lr-case-7', '307', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600',
+  20.8385, 78.6050, now() - interval '12 hours',
+  'Insect Pest', '2026-07-08', 'Caterpillar pest manifestation.',
+  'Pigeon Pea (Tur)', 70.0, 'Moderate to high insect leaf-eating damage detected.',
+  true, 'success', 93, 91, 'No duplicates', 'None', 92, 96250.0, NULL,
+  'under_review', NULL, NULL,
+  now() - interval '12 hours', now() - interval '11 hours'
+),
+-- Claim 8: Verified (Storm flattened)
+(
+  'claim-case-8', 'f-interconnected-harish', 'Harish Patil', 'lr-case-8', '308', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600',
+  20.8390, 78.6060, now() - interval '1 day',
+  'Hailstorm', '2026-07-07', 'Heavy storm flattened field.',
+  'Wheat', 85.0, 'AI confirms crop flattening patterns matching high velocity storm winds.',
+  true, 'success', 97, 96, 'No duplicates', 'None', 96, 42075.0, NULL,
+  'verified', NULL, NULL,
+  now() - interval '1 day', now() - interval '20 hours'
+),
+-- Claim 9: Approved (Drought pods)
+(
+  'claim-case-9', 'f-interconnected-harish', 'Harish Patil', 'lr-case-9', '309', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600',
+  20.8395, 78.6070, now() - interval '2 days',
+  'Drought', '2026-06-25', 'Cotton pod dehydration.',
+  'Cotton', 70.0, 'Moderate drought distress patterns detected.',
+  true, 'success', 94, 93, 'No duplicates', 'None', 93, 67200.0, 67200.0,
+  'approved', 'off-interconnected-ao', 'Approved per official regional notification.',
+  now() - interval '2 days', now() - interval '1 day'
+),
+-- Claim 10: Payout Completed (Silt deposits)
+(
+  'claim-case-10', 'f-interconnected-harish', 'Harish Patil', 'lr-case-10', '310', 'v1-uuid-wardha',
+  'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600',
+  20.8400, 78.6080, now() - interval '3 days',
+  'Flood', '2026-07-01', 'Flood silting.',
+  'Soybean', 80.0, 'Heavy soil silt layers cover leaves.',
+  true, 'success', 98, 96, 'No duplicates', 'None', 97, 56000.0, 56000.0,
+  'payout_completed', 'off-interconnected-ao', 'Bank transfer cleared.',
+  now() - interval '3 days', now() - interval '2 days'
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 6. Interconnected NGO Verifications (6 cases verified by the NGO Mitra)
+INSERT INTO ngo_verifications (id, ngo_id, claim_id, farmer_id, photo_url, remarks, verification_type) VALUES
+  ('verif-case-3', 'ngo-interconnected-mitra', 'claim-case-3', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600', 'Mitra visited the field; confirmed heavy hailstorm breakage.', 'field_visit'),
+  ('verif-case-4', 'ngo-interconnected-mitra', 'claim-case-4', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600', 'Soil profile extremely dry. Recommended.', 'field_visit'),
+  ('verif-case-5', 'ngo-interconnected-mitra', 'claim-case-5', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600', 'Verified complete wash-out of cotton seedlings.', 'field_visit'),
+  ('verif-case-6', 'ngo-interconnected-mitra', 'claim-case-6', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&q=80&w=600', 'Field visit completed. Damage is minimal.', 'field_visit'),
+  ('verif-case-8', 'ngo-interconnected-mitra', 'claim-case-8', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600', 'Mitra visited; verified extensive flattening of wheat stems.', 'field_visit'),
+  ('verif-case-10', 'ngo-interconnected-mitra', 'claim-case-10', 'f-interconnected-harish', 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=600', 'Field visit confirmed 2 inches of silt. Payout justified.', 'field_visit')
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. Interconnected Claim Status Logs
+INSERT INTO claim_status_logs (id, claim_id, old_status, new_status, changed_by_role, changed_by_id, remarks, timestamp) VALUES
+  ('log-case-1', 'claim-case-1', 'none', 'filed', 'farmer', 'f-interconnected-harish', 'Claim submitted via portal', now() - interval '2 hours'),
+  ('log-case-2a', 'claim-case-2', 'none', 'filed', 'farmer', 'f-interconnected-harish', 'Claim submitted', now() - interval '10 hours'),
+  ('log-case-2b', 'claim-case-2', 'filed', 'under_review', 'system', 'system', 'AI pipeline score calculated', now() - interval '9 hours'),
+  ('log-case-3a', 'claim-case-3', 'none', 'filed', 'farmer', 'f-interconnected-harish', 'Claim submitted', now() - interval '1 day'),
+  ('log-case-3b', 'claim-case-3', 'filed', 'under_review', 'system', 'system', 'AI pipeline finished', now() - interval '22 hours'),
+  ('log-case-3c', 'claim-case-3', 'under_review', 'verified', 'ngo', 'ngo-interconnected-mitra', 'Field visit completed', now() - interval '18 hours'),
+  ('log-case-4a', 'claim-case-4', 'none', 'filed', 'farmer', 'f-interconnected-harish', 'Claim submitted', now() - interval '2 days'),
+  ('log-case-4b', 'claim-case-4', 'under_review', 'verified', 'ngo', 'ngo-interconnected-mitra', 'Field visit completed', now() - interval '1 day 12 hours'),
+  ('log-case-4c', 'claim-case-4', 'verified', 'approved', 'official', 'off-interconnected-ao', 'Approved official claims queue', now() - interval '1 day'),
+  ('log-case-5a', 'claim-case-5', 'none', 'filed', 'farmer', 'f-interconnected-harish', 'Claim submitted', now() - interval '3 days'),
+  ('log-case-5b', 'claim-case-5', 'verified', 'approved', 'official', 'off-interconnected-ao', 'Approved', now() - interval '2 days 12 hours'),
+  ('log-case-5c', 'claim-case-5', 'approved', 'payout_completed', 'official', 'off-interconnected-ao', 'Disbursed via AEPS bridge', now() - interval '2 days')
+ON CONFLICT (id) DO NOTHING;

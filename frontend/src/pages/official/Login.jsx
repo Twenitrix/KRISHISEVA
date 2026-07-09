@@ -12,8 +12,17 @@ export default function OfficialLogin() {
   const toast = useToast();
   const isSupabase = authService.isConfigured();
 
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  // Sign In fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Sign Up extra fields
+  const [name, setName] = useState('');
+  const [designation, setDesignation] = useState('Sub-Divisional Magistrate');
+  const [phone, setPhone] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -44,6 +53,42 @@ export default function OfficialLogin() {
     }
   };
 
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    const newErrors = {};
+    if (!name) newErrors.name = t('common.requiredField');
+    if (!phone || phone.length < 10) newErrors.phone = 'Invalid phone number';
+    if (!email) newErrors.email = t('common.requiredField');
+    if (!password || password.length < 8) newErrors.password = 'Must be at least 8 characters';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await authService.signUp(email, password, 'official', {
+        name,
+        designation,
+        phone,
+      });
+
+      if (res.success) {
+        toast.success('Official registration successful');
+        // Automatically log in
+        await authService.signIn(email, password);
+        navigate('/official');
+      }
+    } catch (err) {
+      toast.error(err.message || 'Registration failed');
+      setErrors({ form: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-paper flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
@@ -53,7 +98,9 @@ export default function OfficialLogin() {
         >
           K
         </span>
-        <h1 className="text-2xl font-bold text-text-primary tracking-tight">{t('auth.officialLoginTitle')}</h1>
+        <h1 className="text-2xl font-bold text-text-primary tracking-tight">
+          {isSignUp ? 'Government Official Registration' : t('auth.officialLoginTitle')}
+        </h1>
         <p className="mt-2 text-sm text-text-secondary">{t('common.tagline')}</p>
       </div>
 
@@ -71,35 +118,125 @@ export default function OfficialLogin() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <Input
-              label={t('auth.staffId')}
-              type="email"
-              placeholder={t('auth.staffIdPlaceholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              disabled={loading}
-            />
-            <Input
-              label={t('auth.password')}
-              type="password"
-              placeholder={t('auth.passwordPlaceholder')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-              disabled={loading}
-            />
-            
-            <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full" size="md" loading={loading}>
-                {t('auth.loginButton')}
-              </Button>
-              <Button variant="ghost" onClick={() => navigate('/')}>
-                Cancel
-              </Button>
-            </div>
-          </form>
+          {/* Tab Selection */}
+          <div className="flex border-b border-border-default -mx-6 mb-6">
+            <button
+              onClick={() => { setIsSignUp(false); setErrors({}); }}
+              className={`flex-1 py-2 text-center text-sm font-semibold transition-colors border-b-2 ${
+                !isSignUp 
+                  ? 'border-accent text-accent' 
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => { setIsSignUp(true); setErrors({}); }}
+              className={`flex-1 py-2 text-center text-sm font-semibold transition-colors border-b-2 ${
+                isSignUp 
+                  ? 'border-accent text-accent' 
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              Register
+            </button>
+          </div>
+
+          {!isSignUp ? (
+            <form onSubmit={handleLogin} className="space-y-6">
+              <Input
+                label="Official Email Address"
+                type="email"
+                placeholder="official@gov.in"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
+                disabled={loading}
+              />
+              <Input
+                label={t('auth.password')}
+                type="password"
+                placeholder={t('auth.passwordPlaceholder')}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+                disabled={loading}
+              />
+              
+              <div className="flex flex-col gap-3">
+                <Button type="submit" className="w-full" size="md" loading={loading}>
+                  {t('auth.loginButton')}
+                </Button>
+                <Button variant="ghost" onClick={() => navigate('/')}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister} className="space-y-6">
+              <Input
+                label="Full Name"
+                type="text"
+                placeholder="Shri. Rajesh Deshmukh"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={errors.name}
+                disabled={loading}
+              />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-text-secondary">Designation</label>
+                <select
+                  value={designation}
+                  onChange={(e) => setDesignation(e.target.value)}
+                  className="w-full bg-white border border-border-default rounded-md px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent"
+                  disabled={loading}
+                >
+                  <option value="Sub-Divisional Magistrate">Sub-Divisional Magistrate</option>
+                  <option value="District Collector">District Collector</option>
+                  <option value="Tehsildar">Tehsildar</option>
+                  <option value="Agriculture Officer">Agriculture Officer</option>
+                  <option value="Claims Auditor">Claims Auditor</option>
+                  <option value="Field Inspector">Field Inspector</option>
+                </select>
+              </div>
+              <Input
+                label="Phone Number"
+                type="text"
+                placeholder="9876543212"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                error={errors.phone}
+                disabled={loading}
+              />
+              <Input
+                label="Email Address"
+                type="email"
+                placeholder="official@gov.in"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
+                disabled={loading}
+              />
+              <Input
+                label="Password (min 8 chars)"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+                disabled={loading}
+              />
+              
+              <div className="flex flex-col gap-3">
+                <Button type="submit" className="w-full" size="md" loading={loading}>
+                  Register & Sign In
+                </Button>
+                <Button variant="ghost" onClick={() => setIsSignUp(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          )}
         </Card>
       </div>
     </div>
