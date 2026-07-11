@@ -1,14 +1,14 @@
 /**
  * Card — container for content sections.
- * White surface, subtle border, shadow-card, rounded-lg.
+ * White surface, subtle border, shadow-card, rounded-2xl.
  */
 
 export default function Card({ children, className = '', padding = true, ...props }) {
   return (
     <div
       className={`
-        bg-surface border border-border-default rounded-lg shadow-card
-        ${padding ? 'p-5' : ''}
+        bg-white border border-border-default rounded-2xl shadow-card transition-all duration-300
+        ${padding ? 'p-6' : ''}
         ${className}
       `}
       {...props}
@@ -34,7 +34,7 @@ export function CardHeader({ children, className = '' }) {
  */
 export function CardTitle({ children, className = '' }) {
   return (
-    <h3 className={`text-lg font-semibold text-text-primary ${className}`}>
+    <h3 className={`text-lg font-bold text-text-primary tracking-tight font-heading ${className}`}>
       {children}
     </h3>
   );

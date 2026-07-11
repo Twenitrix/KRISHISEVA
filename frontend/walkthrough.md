@@ -60,6 +60,9 @@ All 10 claims are mapped to **Harish Patil** across different stages of approval
 4. **[authService.js](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/services/authService.js)**: Contains `signInFarmerAadhaar` to securely authenticate farmers and log success/failures for signins and signups to the Supabase `auth_logs` table.
 5. **[Login.jsx (Farmer)](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/pages/farmer/Login.jsx)**: Unified to display Aadhaar input fields in all environments (whether Supabase is configured or running offline).
 6. **[Login.jsx (Official)](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/pages/official/Login.jsx)**: Upgraded with tabbed selectors to support both standard **Sign In** and new **Register** options, allowing officials to dynamically register on the portal.
+7. **[index.css](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/index.css)**: Completely redesigned with Tailwind v4 `@theme` (Outfit/Inter fonts, emerald/slate palettes, glassmorphism panel styles, and pulsing micro-animations).
+8. **[RoleSelect.jsx](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/pages/RoleSelect.jsx)**: Revamped the landing page with glass headers, premium illustration cards, and a new public **Claim Tracker Search Widget**.
+9. **[UI/Layout Redesigns](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/layouts)**: Refitted `FarmerLayout`, `NGOLayout`, `OfficialLayout`, `Card`, `Button`, `Input`, `Badge`, and claim wizards for a unified, modern ag-tech aesthetic.
 
 
 ---

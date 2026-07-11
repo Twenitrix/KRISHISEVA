@@ -4,13 +4,13 @@
  */
 
 const variantClasses = {
-  pending:   'bg-status-pending-bg text-status-pending',
-  verified:  'bg-status-verified-bg text-status-verified',
-  approved:  'bg-status-verified-bg text-status-verified',
-  rejected:  'bg-status-rejected-bg text-status-rejected',
-  denied:    'bg-status-rejected-bg text-status-rejected',
-  info:      'bg-status-info-bg text-status-info',
-  default:   'bg-surface-alt text-text-secondary',
+  pending:   'bg-amber-50 text-amber-700 border border-amber-200/50',
+  verified:  'bg-emerald-50 text-emerald-700 border border-emerald-200/50',
+  approved:  'bg-emerald-50 text-emerald-700 border border-emerald-200/50',
+  rejected:  'bg-rose-50 text-rose-700 border border-rose-200/50',
+  denied:    'bg-rose-50 text-rose-700 border border-rose-200/50',
+  info:      'bg-blue-50 text-blue-700 border border-blue-200/50',
+  default:   'bg-slate-50 text-slate-600 border border-slate-200/50',
 };
 
 /**
@@ -35,8 +35,8 @@ export default function Badge({ children, variant, status, className = '' }) {
     <span
       className={`
         inline-flex items-center
-        px-2.5 py-0.5
-        text-xs font-medium
+        px-3 py-1
+        text-[11px] font-bold tracking-wide uppercase
         rounded-full
         whitespace-nowrap
         ${variantClasses[resolvedVariant] || variantClasses.default}

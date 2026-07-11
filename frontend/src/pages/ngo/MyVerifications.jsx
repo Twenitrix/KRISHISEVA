@@ -83,15 +83,19 @@ export default function MyVerifications() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">{t('ngo.myVerifications.title')}</h1>
-        <p className="text-sm text-text-secondary">Records of all field verifications you have submitted</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-text-primary font-heading tracking-tight">
+            {t('ngo.myVerifications.title')}
+          </h1>
+          <p className="text-sm text-text-secondary mt-1">Records of all field verifications you have submitted</p>
+        </div>
       </div>
 
       {/* Search */}
       {verifications.length > 0 && (
-        <Card className="p-4">
-          <div className="w-full sm:max-w-xs">
+        <Card className="p-4 bg-white border border-border-default shadow-sm rounded-2xl">
+          <div className="w-full md:max-w-sm">
             <Input
               placeholder="Search by farmer name or remarks"
               value={searchQuery}
@@ -104,58 +108,61 @@ export default function MyVerifications() {
 
       {/* Content */}
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <p className="text-text-secondary">{t('common.loading')}</p>
+        <div className="flex flex-col justify-center items-center py-16 gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+          <p className="text-sm text-text-secondary">{t('common.loading')}</p>
         </div>
       ) : verifications.length === 0 ? (
-        <Card className="text-center py-16">
-          <svg className="w-12 h-12 text-text-muted mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          <p className="text-text-secondary font-medium">{t('ngo.myVerifications.empty')}</p>
-          <p className="text-text-muted text-sm mt-1">Verify claims from the Dashboard to see them here.</p>
+        <Card className="text-center py-16 border border-border-default bg-white rounded-2xl">
+          <div className="bg-slate-50 text-text-muted p-3 h-12 w-12 rounded-xl flex items-center justify-center shrink-0 mx-auto mb-4 border border-slate-200">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <p className="text-text-secondary font-bold font-heading text-lg">{t('ngo.myVerifications.empty')}</p>
+          <p className="text-text-muted text-xs mt-1">Verify claims from the Dashboard to see them here.</p>
         </Card>
       ) : filtered.length === 0 ? (
-        <Card className="text-center py-12">
-          <p className="text-text-secondary font-medium">{t('common.noResults')}</p>
-          <p className="text-text-muted text-sm mt-1">{t('common.noResultsHint')}</p>
+        <Card className="text-center py-16 border border-border-default bg-white rounded-2xl">
+          <p className="text-text-secondary font-bold font-heading text-lg">{t('common.noResults')}</p>
+          <p className="text-text-muted text-xs mt-1">{t('common.noResultsHint')}</p>
         </Card>
       ) : (
-        <div className="bg-surface border border-border-default rounded-lg overflow-hidden shadow-card">
+        <div className="bg-white border border-border-default rounded-2xl overflow-hidden shadow-card">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border-default">
-              <thead className="bg-surface-alt">
+              <thead className="bg-slate-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Farmer</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Type</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Remarks</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Claim Status</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">Date</th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Farmer</th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Type</th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Remarks</th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Claim Status</th>
+                  <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-text-secondary uppercase tracking-wider">Date</th>
                 </tr>
               </thead>
-              <tbody className="bg-surface divide-y divide-border-default">
+              <tbody className="bg-white divide-y divide-border-default/60">
                 {filtered.map((v) => (
                   <tr 
                     key={v.id} 
-                    className="hover:bg-surface-alt/50 transition-colors cursor-pointer"
+                    className="hover:bg-slate-50/50 transition-all duration-200 cursor-pointer"
                     onClick={() => handleRowClick(v)}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-text-primary">{v.farmer_name}</div>
-                      <div className="text-xs text-text-muted font-mono">{v.id.split('-').slice(0, 2).join('-')}</div>
+                      <div className="text-sm font-bold text-text-primary font-heading">{v.farmer_name}</div>
+                      <div className="text-[10px] text-text-muted font-mono tracking-wider mt-0.5">ID: {v.id.split('-').slice(0, 2).join('-').toUpperCase()}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary capitalize">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-semibold capitalize">
                       {v.verification_type === 'field_visit' ? t('ngo.verification.fieldVisit') : t('ngo.verification.documentaryProof')}
                     </td>
                     <td className="px-6 py-4 text-sm text-text-secondary max-w-[250px]">
-                      <p className="truncate" title={v.remarks}>{v.remarks || '—'}</p>
+                      <p className="truncate font-medium" title={v.remarks}>{v.remarks || '—'}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <Badge status={v.claim_status}>
                         {t(`status.${v.claim_status}`) || v.claim_status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-text-muted">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-text-muted font-mono font-semibold">
                       {new Date(v.created_at).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -178,15 +185,17 @@ export default function MyVerifications() {
         size="lg"
       >
         {selectedClaim && (
-          <ClaimDetail
-            claim={selectedClaim}
-            report={reportDetails}
-            ngoVerification={ngoVerification}
-            statusLogs={statusLogs}
-            viewerRole="ngo"
-            onClose={() => setModalOpen(false)}
-            loading={loadingLogs}
-          />
+          <div className="max-h-[70vh] overflow-y-auto pr-2 scrollbar-hide">
+            <ClaimDetail
+              claim={selectedClaim}
+              report={reportDetails}
+              ngoVerification={ngoVerification}
+              statusLogs={statusLogs}
+              viewerRole="ngo"
+              onClose={() => setModalOpen(false)}
+              loading={loadingLogs}
+            />
+          </div>
         )}
       </Modal>
     </div>

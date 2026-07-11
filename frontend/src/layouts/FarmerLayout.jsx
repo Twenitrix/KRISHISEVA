@@ -55,20 +55,30 @@ export default function FarmerLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-paper flex flex-col pb-16 sm:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col pb-16 sm:pb-0">
+      
+      {/* Decorative Orbs */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 left-10 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+
       {/* Top Header */}
-      <header className="sticky top-0 bg-surface border-b border-border-default z-10">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-accent text-lg">K</span>
-            <span className="font-semibold text-text-primary text-sm tracking-tight">{t('common.appName')}</span>
-            <span className="text-xs bg-accent-light text-accent font-medium px-2 py-0.5 rounded-full">{t('roles.farmer')}</span>
+      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-border-default z-30 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="font-bold bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-2.5 py-0.5 rounded-lg text-lg shadow-sm">K</span>
+            <span className="font-extrabold text-text-primary text-base tracking-tight font-heading">
+              Krishi<span className="text-accent">Seva</span>
+            </span>
+            <span className="text-[10px] uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/50 font-bold px-2 py-0.5 rounded-full">
+              {t('roles.farmer')}
+            </span>
           </div>
+          
           <button
             onClick={handleLogout}
-            className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5 min-h-[40px] px-3 rounded-md hover:bg-surface-alt"
+            className="text-xs font-bold text-text-secondary hover:text-status-rejected transition-colors flex items-center gap-1.5 min-h-[38px] px-3.5 rounded-xl hover:bg-red-50 border border-transparent hover:border-red-100"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             <span className="hidden sm:inline">{t('common.logout')}</span>
@@ -77,24 +87,28 @@ export default function FarmerLayout() {
       </header>
 
       {/* Main Workspace */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4">
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 relative z-10">
         <Outlet />
       </main>
 
-      {/* Bottom Nav (Farmer: touch-first target focus on mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-default z-10 sm:hidden">
-        <div className="flex justify-around items-center h-16">
+      {/* Bottom Nav (Farmer: floating glass bar style on mobile) */}
+      <nav className="fixed bottom-3 left-3 right-3 bg-white/90 backdrop-blur-md border border-border-default shadow-lg rounded-2xl z-30 sm:hidden">
+        <div className="flex justify-around items-center h-16 px-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center flex-1 h-full text-xs gap-1 transition-colors ${
-                  isActive ? 'text-accent font-medium' : 'text-text-secondary'
+                className={`flex flex-col items-center justify-center flex-1 h-full text-[10px] font-bold tracking-tight gap-1 transition-all rounded-xl ${
+                  isActive 
+                    ? 'text-emerald-700 bg-emerald-50/50' 
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                {item.icon}
+                <div className={`p-1 rounded-lg ${isActive ? 'text-emerald-600' : 'text-text-muted'}`}>
+                  {item.icon}
+                </div>
                 <span>{item.label}</span>
               </Link>
             );

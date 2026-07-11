@@ -21,9 +21,9 @@ const Input = forwardRef(function Input(
   const inputId = id || props.name || label?.toLowerCase().replace(/\s+/g, '-');
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm min-h-[36px]',
-    md: 'px-3.5 py-2.5 text-base min-h-[44px]',
-    lg: 'px-4 py-3 text-base min-h-[52px]',
+    sm: 'px-3 py-2 text-sm min-h-[38px] rounded-lg',
+    md: 'px-4 py-2.5 text-base min-h-[46px] rounded-xl',
+    lg: 'px-5 py-3.5 text-base min-h-[54px] rounded-2xl',
   };
 
   return (
@@ -31,7 +31,7 @@ const Input = forwardRef(function Input(
       {label && (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-text-primary"
+          className="text-xs font-bold uppercase tracking-wider text-text-secondary"
         >
           {label}
         </label>
@@ -40,14 +40,14 @@ const Input = forwardRef(function Input(
         ref={ref}
         id={inputId}
         className={`
-          w-full rounded-md
-          border bg-surface text-text-primary
+          w-full
+          border bg-white text-text-primary
           placeholder:text-text-muted
-          transition-colors duration-150
-          focus:outline-none focus:ring-2 focus:ring-border-focus/40 focus:border-border-focus
-          disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface-alt
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:shadow-sm
+          disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50
           ${error
-            ? 'border-status-rejected focus:ring-status-rejected/30'
+            ? 'border-status-rejected focus:ring-status-rejected/20 focus:border-status-rejected'
             : 'border-border-default'
           }
           ${sizeClasses[size] || sizeClasses.md}
@@ -60,12 +60,12 @@ const Input = forwardRef(function Input(
         {...props}
       />
       {error && (
-        <p id={`${inputId}-error`} className="text-xs text-status-rejected" role="alert">
+        <p id={`${inputId}-error`} className="text-xs font-medium text-status-rejected mt-0.5" role="alert">
           {error}
         </p>
       )}
       {!error && helperText && (
-        <p id={`${inputId}-helper`} className="text-xs text-text-muted">
+        <p id={`${inputId}-helper`} className="text-xs text-text-muted mt-0.5">
           {helperText}
         </p>
       )}
