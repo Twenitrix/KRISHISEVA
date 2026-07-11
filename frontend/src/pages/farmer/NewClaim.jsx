@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button';
 import FileUpload from '../../components/ui/FileUpload';
 import { api } from '../../api';
 import { useToast } from '../../components/ui/Toast';
+import { extractExifGps } from '../../utils/imageAnalyzer';
 
 export default function NewClaim() {
   const navigate = useNavigate();
@@ -89,8 +90,32 @@ export default function NewClaim() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (file) => {
+  const [exifStatus, setExifStatus] = useState('');
+
+  const handleFileChange = async (file) => {
     setFormData((prev) => ({ ...prev, file }));
+    if (!file) {
+      setExifStatus('');
+      return;
+    }
+    
+    setExifStatus('Scanning photo for geotags...');
+    try {
+      const gps = await extractExifGps(file);
+      if (gps && gps.latitude && gps.longitude) {
+        setGpsSimulated({
+          latitude: gps.latitude,
+          longitude: gps.longitude
+        });
+        setExifStatus('✅ Photo geotags successfully loaded!');
+        toast.success('Geotags extracted successfully from photo!');
+      } else {
+        setExifStatus('⚠️ No GPS coordinates found in photo metadata. Falling back to device location.');
+      }
+    } catch (e) {
+      console.error(e);
+      setExifStatus('⚠️ Geotag extraction failed. Falling back to device location.');
+    }
   };
 
   const selectedParcel = landParcels.find((p) => p.id === formData.land_registry_id);
@@ -337,6 +362,14 @@ export default function NewClaim() {
                   onChange={handleFileChange}
                   error={errors.file}
                 />
+                
+                {exifStatus && (
+                  <div className={`p-3 rounded-xl text-xs font-semibold ${
+                    exifStatus.startsWith('✅') ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
+                  }`}>
+                    {exifStatus}
+                  </div>
+                )}
                 
                 <div className="bg-slate-50 border border-border-default/60 p-5 rounded-2xl text-xs space-y-2 text-text-secondary">
                   <p className="font-bold text-text-primary font-heading border-b border-border-default pb-1.5">

@@ -1,6 +1,60 @@
 import axios from 'axios';
 import { hasSupabase } from '../lib/supabaseClient';
 import { supabaseDataService } from '../services/supabaseDataService';
+import { analyzeImageContent } from '../utils/imageAnalyzer';
+
+// Haversine Distance helper (meters)
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  if (lat1 === null || lat1 === undefined || lon1 === null || lon1 === undefined) return null;
+  if (lat2 === null || lat2 === undefined || lon2 === null || lon2 === undefined) return null;
+  const R = 6371e3; // meters
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+  const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // meters
+}
+
+function calculateScores(photoLat, photoLon, landLat, lon2, isCropMatch) {
+  if (photoLat === null || photoLat === undefined || photoLon === null || photoLon === undefined) {
+    return { gpsScore: 0, landScore: 0, overallScore: 25 }; 
+  }
+  const dist = haversineDistance(photoLat, photoLon, landLat, lon2);
+  let gpsScore = 0;
+  if (dist !== null) {
+    if (dist <= 50) {
+      gpsScore = 100;
+    } else if (dist <= 500) {
+      gpsScore = Math.round(100 - (dist / 500) * 100);
+    } else {
+      gpsScore = 0;
+    }
+  }
+
+  let landScore = 0;
+  if (gpsScore > 0) {
+    landScore = Math.round(gpsScore * 0.98);
+  }
+
+  const cropMatchScoreVal = isCropMatch ? 25 : 0;
+  const duplicateScoreVal = 25; // default duplicate check pass
+  const gpsScoreVal = (gpsScore / 100) * 30;
+  const landScoreVal = (landScore / 100) * 20;
+
+  const overallScore = Math.round(gpsScoreVal + landScoreVal + duplicateScoreVal + cropMatchScoreVal);
+
+  return {
+    gpsScore,
+    landScore,
+    overallScore
+  };
+}
 
 // Toggle for offline demonstration mode
 const USE_MOCKS = !hasSupabase;
@@ -513,31 +567,77 @@ const apiMock = {
         db.claim_status_logs.push(log);
         saveMockDB(db);
 
-        // ─── Trigger Mock background AI processor (FastAPI background tasks style) ───
-        setTimeout(() => {
+        // Real client-side AI and Rule Engine processing (simulating a background task after 4s)
+        setTimeout(async () => {
           const freshDb = getMockDB();
           const targetClaimIdx = freshDb.claims.findIndex(c => c.id === newClaimId);
           if (targetClaimIdx !== -1 && freshDb.claims[targetClaimIdx].status === 'filed') {
             const cropName = land ? land.crop_on_record : 'Cotton';
             const area = land ? land.area_hectares : 1.0;
             const insuredSum = freshDb.crop_insured_sums.find(c => c.crop_name === cropName)?.insured_sum_per_hectare || 60000;
-            const damagePercent = Math.floor(Math.random() * 40) + 40; // 40% - 80%
+
+            let analysis = {
+              isValidCropImage: true,
+              cropIdentified: cropName,
+              damagePercentage: 45,
+              justification: 'Crop damage photo analyzed successfully.'
+            };
+
+            if (fileObj) {
+              try {
+                analysis = await analyzeImageContent(fileObj, cropName);
+              } catch (e) {
+                console.error('Error analyzing image pixels:', e);
+              }
+            }
+
+            const pLat = newClaim.photo_latitude;
+            const pLon = newClaim.photo_longitude;
+            const lLat = land?.latitude || 20.8351;
+            const lLon = land?.longitude || 78.6015;
+
+            let updateFields = {};
+
+            if (!analysis.isValidCropImage) {
+              updateFields = {
+                status: 'under_review',
+                ai_identified_crop: 'Unknown / Irrelevant',
+                ai_damage_percentage: 0,
+                ai_justification: analysis.justification,
+                ai_crop_matches_record: false,
+                ai_call_status: 'success',
+                gps_match_score: 0,
+                land_match_score: 0,
+                duplicate_check_result: 'Clean',
+                fraud_flags: 'Flagged: Irrelevant Image Uploaded',
+                overall_score: 15,
+                suggested_payout_amount: 0,
+                updated_at: new Date().toISOString()
+              };
+            } else {
+              const scores = calculateScores(pLat, pLon, lLat, lLon, true);
+              const payoutAmt = Math.round((analysis.damagePercentage / 100) * area * insuredSum);
+
+              updateFields = {
+                status: 'under_review',
+                ai_identified_crop: analysis.cropIdentified,
+                ai_damage_percentage: analysis.damagePercentage,
+                ai_justification: analysis.justification,
+                ai_crop_matches_record: true,
+                ai_call_status: 'success',
+                gps_match_score: scores.gpsScore,
+                land_match_score: scores.landScore,
+                duplicate_check_result: 'No duplicates found',
+                fraud_flags: 'None',
+                overall_score: scores.overallScore,
+                suggested_payout_amount: payoutAmt,
+                updated_at: new Date().toISOString()
+              };
+            }
 
             freshDb.claims[targetClaimIdx] = {
               ...freshDb.claims[targetClaimIdx],
-              status: 'under_review',
-              ai_identified_crop: cropName,
-              ai_damage_percentage: damagePercent,
-              ai_justification: `AI Vision analysis confirms presence of ${cropName} crop with standard water submersion damage corresponding to severe weather conditions.`,
-              ai_crop_matches_record: true,
-              ai_call_status: 'success',
-              gps_match_score: 95,
-              land_match_score: 93,
-              duplicate_check_result: 'No duplicates found',
-              fraud_flags: 'None',
-              overall_score: 94,
-              suggested_payout_amount: Math.round((damagePercent / 100) * area * insuredSum),
-              updated_at: new Date().toISOString()
+              ...updateFields
             };
 
             freshDb.claim_status_logs.push({

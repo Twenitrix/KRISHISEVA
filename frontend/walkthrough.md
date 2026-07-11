@@ -63,6 +63,8 @@ All 10 claims are mapped to **Harish Patil** across different stages of approval
 7. **[index.css](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/index.css)**: Completely redesigned with Tailwind v4 `@theme` (Outfit/Inter fonts, emerald/slate palettes, glassmorphism panel styles, and pulsing micro-animations).
 8. **[RoleSelect.jsx](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/pages/RoleSelect.jsx)**: Revamped the landing page with glass headers, premium illustration cards, and a new public **Claim Tracker Search Widget**.
 9. **[UI/Layout Redesigns](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/layouts)**: Refitted `FarmerLayout`, `NGOLayout`, `OfficialLayout`, `Card`, `Button`, `Input`, `Badge`, and claim wizards for a unified, modern ag-tech aesthetic.
+10. **[imageAnalyzer.js](file:///c:/Users/SATYAM%20CHOUDHARY/OneDrive/Desktop/IDEATHON/KRISHISEVA/frontend/src/utils/imageAnalyzer.js)**: Added an image analysis engine that parses binary image buffers to extract actual GPS EXIF geotags and performs client-side color density checks to reject irrelevant files (e.g., selfies, documents) and dynamically calculate crop damage ratios.
+
 
 
 ---
