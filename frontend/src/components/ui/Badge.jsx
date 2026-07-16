@@ -4,13 +4,13 @@
  */
 
 const variantClasses = {
-  pending:   'bg-amber-50 text-amber-700 border border-amber-200/50',
-  verified:  'bg-emerald-50 text-emerald-700 border border-emerald-200/50',
-  approved:  'bg-emerald-50 text-emerald-700 border border-emerald-200/50',
-  rejected:  'bg-rose-50 text-rose-700 border border-rose-200/50',
-  denied:    'bg-rose-50 text-rose-700 border border-rose-200/50',
-  info:      'bg-blue-50 text-blue-700 border border-blue-200/50',
-  default:   'bg-slate-50 text-slate-600 border border-slate-200/50',
+  pending:   'bg-[var(--color-status-pending-bg)] text-[var(--color-status-pending)] border border-[var(--color-turmeric-border)]/40',
+  verified:  'bg-[var(--color-status-verified-bg)] text-[var(--color-status-verified)] border border-[var(--color-accent)]/20',
+  approved:  'bg-[var(--color-status-verified-bg)] text-[var(--color-status-verified)] border border-[var(--color-accent)]/20',
+  rejected:  'bg-[var(--color-status-rejected-bg)] text-[var(--color-status-rejected)] border border-[var(--color-status-rejected)]/20',
+  denied:    'bg-[var(--color-status-rejected-bg)] text-[var(--color-status-rejected)] border border-[var(--color-status-rejected)]/20',
+  info:      'bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] border border-[var(--color-status-info)]/20',
+  default:   'bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)] border border-[var(--color-border-default)]',
 };
 
 /**

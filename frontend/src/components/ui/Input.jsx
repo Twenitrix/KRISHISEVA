@@ -41,11 +41,11 @@ const Input = forwardRef(function Input(
         id={inputId}
         className={`
           w-full
-          border bg-white text-text-primary
-          placeholder:text-text-muted
+          border bg-white text-[var(--color-text-primary)]
+          placeholder:text-[var(--color-text-muted)]
           transition-all duration-200
-          focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:shadow-sm
-          disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50
+          focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 focus:border-[var(--color-accent)] focus:shadow-sm
+          disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[var(--color-paper)]
           ${error
             ? 'border-status-rejected focus:ring-status-rejected/20 focus:border-status-rejected'
             : 'border-border-default'

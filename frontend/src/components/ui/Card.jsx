@@ -7,7 +7,7 @@ export default function Card({ children, className = '', padding = true, ...prop
   return (
     <div
       className={`
-        bg-white border border-border-default rounded-2xl shadow-card transition-all duration-300
+        bg-white border border-[var(--color-border-default)] rounded-2xl shadow-[var(--shadow-card)] transition-all duration-300
         ${padding ? 'p-6' : ''}
         ${className}
       `}
@@ -23,7 +23,7 @@ export default function Card({ children, className = '', padding = true, ...prop
  */
 export function CardHeader({ children, className = '' }) {
   return (
-    <div className={`pb-4 mb-4 border-b border-border-default ${className}`}>
+    <div className={`pb-4 mb-4 border-b border-[var(--color-border-default)] ${className}`}>
       {children}
     </div>
   );
@@ -34,7 +34,7 @@ export function CardHeader({ children, className = '' }) {
  */
 export function CardTitle({ children, className = '' }) {
   return (
-    <h3 className={`text-lg font-bold text-text-primary tracking-tight font-heading ${className}`}>
+    <h3 className={`text-lg font-bold text-[var(--color-text-primary)] tracking-tight font-heading ${className}`}>
       {children}
     </h3>
   );
@@ -45,7 +45,7 @@ export function CardTitle({ children, className = '' }) {
  */
 export function CardFooter({ children, className = '' }) {
   return (
-    <div className={`pt-4 mt-4 border-t border-border-default ${className}`}>
+    <div className={`pt-4 mt-4 border-t border-[var(--color-border-default)] ${className}`}>
       {children}
     </div>
   );

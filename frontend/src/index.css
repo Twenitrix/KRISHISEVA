@@ -4,47 +4,64 @@
 /* Vibrant, high-trust, modern ag-tech aesthetic */
 
 @theme {
-  /* ── Colors ── */
-  --color-paper: #F4F7F5;
+  /* ── Core Brand Colors ── */
+  --color-paper: #FAF5EC;
+  --color-base-dark: #241812;
   --color-surface: #FFFFFF;
-  --color-surface-alt: #EDF1EE;
+  --color-surface-alt: #F0EBE1;
 
-  --color-text-primary: #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted: #64748B;
+  --color-text-primary: #241812;
+  --color-text-secondary: #5C4A3A;
+  --color-text-muted: #9C8270;
 
-  --color-border-default: #E2E8F0;
-  --color-border-focus: #059669;
+  --color-border-default: #E5D9C8;
+  --color-border-focus: #1F8A5C;
 
-  --color-accent: #059669;
-  --color-accent-hover: #047857;
-  --color-accent-light: #ECFDF5;
+  /* ── Primary CTA: Forest Green ── */
+  --color-accent: #1F8A5C;
+  --color-accent-hover: #176B48;
+  --color-accent-light: #E8F5EE;
 
-  --color-status-pending: #D97706;
-  --color-status-pending-bg: #FEF3C7;
-  --color-status-verified: #059669;
-  --color-status-verified-bg: #D1FAE5;
-  --color-status-rejected: #DC2626;
-  --color-status-rejected-bg: #FEE2E2;
-  --color-status-info: #2563EB;
-  --color-status-info-bg: #DBEAFE;
+  /* ── Turmeric: Small elements only ── */
+  --color-turmeric: #D98E2A;
+  --color-turmeric-light: #FDF3E0;
+  --color-turmeric-border: #F0C870;
+
+  /* ── Status Colors ── */
+  --color-status-pending: #C97C12;
+  --color-status-pending-bg: #FDF3E0;
+  --color-status-verified: #1F8A5C;
+  --color-status-verified-bg: #E8F5EE;
+  --color-status-rejected: #C0392B;
+  --color-status-rejected-bg: #FDECEA;
+  --color-status-info: #1A5EA8;
+  --color-status-info-bg: #EBF3FD;
+
+  /* ── Earth & Monsoon Palette (carry-over from landing) ── */
+  --color-earth-dark: #241812;
+  --color-earth: #5D4037;
+  --color-earth-light: #8D6E63;
+  --color-monsoon-dark: #37474F;
+  --color-monsoon: #546E7A;
+  --color-monsoon-light: #90A4AE;
+  --color-marigold: #FFB300;
 
   /* ── Typography ── */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-heading: 'Outfit', 'Inter', sans-serif;
 
   /* ── Shadows ── */
-  --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(0, 0, 0, 0.02);
-  --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03), 0 0 0 1px rgba(16, 185, 129, 0.05);
-  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  --shadow-dropdown: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 12px -2px rgba(36, 24, 18, 0.06), 0 2px 6px -2px rgba(36, 24, 18, 0.04), 0 0 0 1px rgba(36, 24, 18, 0.04);
+  --shadow-premium: 0 16px 24px -6px rgba(36, 24, 18, 0.08), 0 6px 10px -4px rgba(36, 24, 18, 0.05), 0 0 0 1px rgba(31, 138, 92, 0.06);
+  --shadow-modal: 0 24px 48px -12px rgba(36, 24, 18, 0.18);
+  --shadow-dropdown: 0 16px 24px -5px rgba(36, 24, 18, 0.10), 0 6px 10px -4px rgba(36, 24, 18, 0.06);
 }
 
 /* ─── Base Styles ─── */
 html {
   font-family: var(--font-sans);
   color: var(--color-text-primary);
-  background: linear-gradient(135deg, #F4F7F5 0%, #E9EFEA 100%);
+  background-color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -145,6 +162,39 @@ input, textarea, select {
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
   }
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slowPan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slow-pan {
+  animation: slowPan 20s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+
 
 .pulse-glow {
   animation: pulseGlow 2s infinite;

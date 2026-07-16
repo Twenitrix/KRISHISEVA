@@ -9,13 +9,13 @@ import { forwardRef } from 'react';
 
 const variantClasses = {
   primary:
-    'bg-gradient-to-r from-emerald-600 to-teal-500 text-white hover:shadow-md hover:shadow-emerald-500/20 active:opacity-95 focus-visible:ring-2 focus-visible:ring-emerald-500/40 btn-glow',
+    'bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:shadow-[0_4px_12px_rgba(31,138,92,0.25)] active:opacity-95 focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]/40 transition-all',
   secondary:
-    'bg-white text-text-primary border border-border-default hover:bg-slate-50 active:bg-slate-100 shadow-sm',
+    'bg-white text-[var(--color-text-primary)] border border-[var(--color-border-default)] hover:bg-[var(--color-paper)] hover:text-[var(--color-base-dark)] active:bg-[var(--color-paper)]/75 shadow-sm transition-all',
   danger:
     'bg-gradient-to-r from-red-600 to-rose-500 text-white hover:shadow-md hover:shadow-red-500/20 active:opacity-95',
   ghost:
-    'bg-transparent text-text-secondary hover:bg-slate-100 active:bg-slate-200',
+    'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-paper)] active:bg-[var(--color-paper)]/80',
 };
 
 const sizeClasses = {

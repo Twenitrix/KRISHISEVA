@@ -10,7 +10,7 @@ import OfficialLayout from './layouts/OfficialLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages — Landing / Auth
-import RoleSelect from './pages/RoleSelect';
+import Landing from './pages/Landing';
 import FarmerLogin from './pages/farmer/Login';
 import NGOLogin from './pages/ngo/Login';
 import NGORegister from './pages/ngo/Register';
@@ -35,7 +35,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* ── Landing ── */}
-        <Route path="/" element={<RoleSelect />} />
+        <Route path="/" element={<Landing />} />
 
         {/* ── Farmer Portal ── */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
